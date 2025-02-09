@@ -1,47 +1,22 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
-
-type Theme = "light" | "dark";
-
-interface ThemeContextProps {
-  theme: Theme;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") as Theme;
-    if (storedTheme) {
-      setTheme(storedTheme);
-      document.documentElement.classList.add(storedTheme);
-    }
+    setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-
-    document.documentElement.classList.remove(theme);
-    document.documentElement.classList.add(newTheme);
-  };
+  if (!mounted) {
+    return <>{children}</>; // Prevents Next.js hydration mismatch issues
+  }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <NextThemesProvider attribute="class" defaultTheme="system">
       {children}
-    </ThemeContext.Provider>
+    </NextThemesProvider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
 }

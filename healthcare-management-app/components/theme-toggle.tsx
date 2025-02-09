@@ -2,13 +2,13 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Sun, Moon } from "lucide-react"; // Replace with your preferred icons
+import { Sun, Moon } from "lucide-react"; // Light/Dark mode icons
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Ensures the component is mounted before rendering (to avoid hydration issues)
+  // Ensures the toggle button renders correctly on the client
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
